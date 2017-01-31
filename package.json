@@ -1,0 +1,9 @@
+{
+    "name": "BookOrderingSystem",
+    "main": "server.js",
+    "dependencies": {
+        "express": "^4.14.0",
+        "mongoose": "^4.6.6",
+        "body-parser": "^1.15.2"
+    }
+}
