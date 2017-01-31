@@ -1,64 +1,64 @@
 var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectId;
-var Book = require('../models/book');
+var User = require('../models/user');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
-  console.log('we call books router');
+  console.log('we call users router');
   next();
 });
 
 router.route('/')
     .post( function(req, res) {
     
-        var book = new Book(req.body);
-        book.save(function(err,book){
+        var user = new User(req.body);
+        user.save(function(err,user){
             if(err){
                 res.send('Error!');
             }
         });
     
-        res.send('Book created');
+        res.send('User created');
     })
 
     .get( function(req, res) {
         
-        Book.find({}, function(err, books){
+        User.find({}, function(err, users){
             if(err){
                 res.send('Error');
             }
-            res.send(books);
+            res.send(users);
         })
     });
 
-router.route('/:book_id')
+router.route('/:user_id')
 
     .get(function(req, res) {
-        Book.findOne({_id: new ObjectId(req.params.book_id)}, function(err, book){
+        User.findOne({_id: new ObjectId(req.params.user_id)}, function(err, user){
             if(err){
                 res.send('Error');
             }
-            res.send(book);
+            res.send(user);
         })
     })
     
     .delete(function(req, res){
-         Book.remove({_id: new ObjectId(req.params.book_id)}, function(err, book){
+         User.remove({_id: new ObjectId(req.params.user_id)}, function(err, user){
             if(err){
                 res.send('Error');
             }
-            res.send("Book deleted");
+            res.send("user deleted");
         });
         
     })
 
     .put(function(req,res){
-        Book.update({_id: new ObjectId(req.params.book_id)},req.body, function(err, data){
+        User.update({_id: new ObjectId(req.params.user_id)},req.body, function(err, data){
             if(err){
                res.send('Error!');
             }
-            res.send('book updated!');
+            res.send('user updated!');
         });
     });
 

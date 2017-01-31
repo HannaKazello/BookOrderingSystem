@@ -4,14 +4,15 @@ var bodyParser = require('body-parser');
 
 var birds = require('./routers/birds');
 var books = require('./routers/books');
+var users = require('./routers/users');
 
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-//var mongoose   = require('mongoose');
-//mongoose.connect('mongodb://localhost/bear'); // connect to our database
+var mongoose   = require('mongoose');
+mongoose.connect('mongodb://localhost/library'); // connect to our database
 
 
 var port = process.env.PORT || 8080;        // set our port
@@ -19,6 +20,7 @@ var port = process.env.PORT || 8080;        // set our port
 
 app.use('/birds', birds);
 app.use('/books', books);
+app.use('/users', users);
 
 app.listen(port);
 console.log('Magic happens on port ' + port);
