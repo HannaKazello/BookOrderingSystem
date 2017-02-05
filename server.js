@@ -2,7 +2,7 @@ var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 
-var birds = require('./routers/birds');
+var orders = require('./routers/orders');
 var books = require('./routers/books');
 var users = require('./routers/users');
 
@@ -18,7 +18,7 @@ mongoose.connect('mongodb://localhost/library'); // connect to our database
 var port = process.env.PORT || 8080;        // set our port
 
 
-app.use('/birds', birds);
+app.use('/orders', orders);
 app.use('/books', books);
 app.use('/users', users);
 

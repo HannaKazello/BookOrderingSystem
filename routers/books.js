@@ -13,13 +13,25 @@ router.route('/')
     .post( function(req, res) {
     
         var book = new Book(req.body);
-        book.save(function(err,book){
-            if(err){
-                res.send('Error!');
+        console.log(req.body);
+        Book.findOne(req.body,function(err, b){
+            if (err){
+                res.send('Error');
             }
+            console.log('b='+'\n'+b);
+            if(b==null){
+                
+                book.save(function(err,book){
+                    if(err){
+                        res.send('Error!');
+                    }
+                    res.send('Book created');
+                });
+            
+            }
+            else res.send('We have that book');
         });
     
-        res.send('Book created');
     })
 
     .get( function(req, res) {
