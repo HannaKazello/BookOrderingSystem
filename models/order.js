@@ -8,9 +8,12 @@ var OrderSchema = new mongoose.Schema({
 	returnDate:{
         type: Date
     },
+    orderDate:{
+        type: Date
+    },
     bookId:{
         type: mongoose.Schema.Types.ObjectId,
-        required: true
+        ref: 'book'
     },
     bookName:{
         type: String
@@ -20,7 +23,7 @@ var OrderSchema = new mongoose.Schema({
     },
     user:{
         type: mongoose.Schema.Types.ObjectId,
-        required: true
+        ref: 'user'
     },
     state:{
 		type:String,
@@ -29,18 +32,6 @@ var OrderSchema = new mongoose.Schema({
 	}   
 });
 
-OrderSchema.methods.setRerurnDate = function () {
-    var now = new Date.UTC();
-    this.returnDate=now.setUTCDate(now.getUTCDate()+14);
-}
-
-OrderSchema.methods.setTakingDate = function () {
-    var now = new Date.UTC();
-    this.takingDate = now;
-}
-OrderSchema.methods.setState = function(state){
-    this.state = state;
-}
 
 var order =  mongoose.model('order', OrderSchema);
 module.exports = order;

@@ -26,6 +26,21 @@ var UserSchema = new mongoose.Schema({
     phone:{
         type: String,
         required: true
+    },
+    adress:{
+        building: String,
+        flat: String,
+        street: String,
+        city: String
+    },
+    DOB:{
+        type: Date
+    },
+    registration:{
+        type:Date
+    },
+    rating:{
+        type: Number
     }
     
 });
