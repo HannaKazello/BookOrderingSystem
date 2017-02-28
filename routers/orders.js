@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectId;
 var Order = require('../models/order');
-var changeState = require('../controllers/orders/changeState');
+var changeState = require('../handlers/orders/changeState');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -36,9 +36,18 @@ router.route('/')
             if(err){
                 res.send('Error');
             }
-            res.send(orders);
+            Order.find({})
+            .populate('user')
+            .populate('bookId')
+            .exec(function(error, orders) {
+                //res.json(JSON.stringify(orders, null, "\t"));
+                //console.log(JSON.stringify(orders, null, "\t"));
+            })
+            console.log(orders);
+            res.json(orders);
         })
-    });
+    })
+;
 
 router.route('/user/:user_id')
     .get(function(req,res){
@@ -98,7 +107,7 @@ router.route('/:order_id')
     });
 
 router.put('/:order_id/:state', function (req, res) {
-    if (changeState(req)) res.send('State changed')
+    if (changeState(req)) res.send('State changed');
     else res.send('error');
     
 });

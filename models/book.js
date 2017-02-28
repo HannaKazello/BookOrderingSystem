@@ -5,9 +5,14 @@ var BookSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    genres:[{
+        type: String
+    }],
+    language: {
+        type: String
+    },
     authors:[{
-        type: String,
-        required: true
+        type: String
     }],
     description:{
         type: String
@@ -15,18 +20,30 @@ var BookSchema = new mongoose.Schema({
     copies:{
         type: Number
     },
-    genres:[{
-        type: String,
-    }],
+    pages:{
+        type: Number
+    },
+    ISBN_code:{
+        type: Number
+    },
     photo:{
         type:String
     },
-    publication:{
-        type:Date
+    yearOfPublication:{
+        type:Number
+    },
+    cityOfPublishing:{
+        type:String
     },
     publishingHouse:{
         type: String
-    }
+    },
+    alternative_names:[{
+        type:String
+    }],
+    keywords:[{
+        type:String
+    }]
     
     
 });

@@ -1,0 +1,15 @@
+{
+    "name": "BookOrderingSystem",
+    "main": "server.js",
+    "dependencies": {
+        "express": "^4.14.0",
+        "mongoose": "^4.6.6",
+        "body-parser": "^1.15.2",
+        "mongodb": "^2.2.11", 
+        "mongoose-dbref":"0.0.2"
+    },
+     "scripts": {
+        "start": "node server.js"
+    }
+}
+
