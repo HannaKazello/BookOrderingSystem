@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var ObjectId = require('mongodb').ObjectId;
-var Book = require('../models/book');
+var bookController = require("../handlers/book-controller");
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -12,66 +11,38 @@ router.use(function timeLog(req, res, next) {
 router.route('/')
     .post( function(req, res) {
     
-        var book = new Book(req.body);
-        console.log(req.body);
-        Book.findOne(req.body,function(err, b){
-            if (err){
-                res.send('Error');
-            }
-            console.log('b='+'\n'+b);
-            if(b==null){
-                
-                book.save(function(err,book){
-                    if(err){
-                        res.send('Error!');
-                    }
-                    res.send('Book created');
-                });
-            
-            }
-            else res.send('We have that book');
-        });
+        bookController.addNewBook(req.body, function(results){
+      res.json(results);
+    });
+
     
     })
 
     .get( function(req, res) {
         
-        Book.find({}, function(err, books){
-            if(err){
-                res.send('Error');
-            }
-            res.send(books);
-        })
+       bookController.getAllBooks(function(results){res.json(results);});
+
     });
 
-router.route('/:book_id')
+router.route('/:isbn')
 
     .get(function(req, res) {
-        Book.findOne({_id: new ObjectId(req.params.book_id)}, function(err, book){
-            if(err){
-                res.send('Error');
-            }
-            res.send(book);
-        })
+        bookController.getBookDetails(req.params, function(results){res.json(results);});
+
     })
     
     .delete(function(req, res){
-         Book.remove({_id: new ObjectId(req.params.book_id)}, function(err, book){
-            if(err){
-                res.send('Error');
-            }
-            res.send("Book deleted");
-        });
-        
+         bookController.deleteBook(req.params.isbn, function(results){
+      res.json(results);
+    });
+
     })
 
     .put(function(req,res){
-        Book.update({_id: new ObjectId(req.params.book_id)},req.body, function(err, data){
-            if(err){
-               res.send('Error!');
-            }
-            res.send('book updated!');
-        });
+        bookController.editBook(req.body, req.params.isbn, function(results){
+      res.json(results);
+    });
+
     });
 
 module.exports = router;
