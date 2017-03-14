@@ -64,6 +64,7 @@ module.exports.addNewOrder = function (body, callback) {
 
     book: new ObjectId(body.book_id),
     user: new ObjectId(body.user_id),
+    orderDate:  new Date()
 
   });
 
@@ -103,6 +104,7 @@ module.exports.changeState = function (id, state, callback) {
         updata.takingDate = setTakingDate();
         updata.returnDate = setRerurnDate();
     }
+    
     
     
     Order.update({_id: new ObjectId(id)},updata, function (err, data) {

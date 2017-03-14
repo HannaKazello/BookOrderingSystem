@@ -33,3 +33,15 @@ module.exports.getAllAuthors = function(callback){
     console.log("Fetching all authors");
   bookDao.getAllAuthors(callback);
 }
+module.exports.getBooksByAuthor = function(author, callback){
+    console.log("Fetching books by author");
+  bookDao.getBooksByAuthor(author, callback);
+}
+module.exports.getBooksByGenre = function(genre, callback){
+    console.log("Fetching books by author");
+  bookDao.getBooksByGenre(genre, callback);
+}
+module.exports.search = function(searchString, callback){
+    console.log("Fetching search");
+  bookDao.search(searchString, callback);
+}

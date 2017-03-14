@@ -14,6 +14,27 @@ module.exports.findOne = function(ISBN_code, callback){
 
 }
  
+module.exports.getBooksByAuthor = function (author, callback) {
+    
+   Book.find({authors: author}, function (err, result) {
+
+    if ( err ) throw err;
+
+    callback(result);
+
+  });
+};
+
+module.exports.getBooksByGenre = function (genre, callback) {
+    
+   Book.find({genres: genre}, function (err, result) {
+
+    if ( err ) throw err;
+
+    callback(result);
+
+  });
+};
 
 module.exports.findAll = function(callback){
 
@@ -27,6 +48,21 @@ module.exports.findAll = function(callback){
 
 }
 
+module.exports.search = function(searchString ,callback){
+
+  Book
+    .find(
+        { $text : { $search : searchString } }
+      , { score : { $meta: "textScore" } }
+    )
+    .sort({ score : { $meta : 'textScore' } })
+    .exec(function(err, results) {
+      if(err) throw err;
+        callback(results);
+    });
+
+}
+
 module.exports.getAllAuthors = function(callback){
     Book.find({},{authors:1}, function(err, result){
 
@@ -34,7 +70,8 @@ module.exports.getAllAuthors = function(callback){
     var authors=[];
     result.forEach(function(item, index, array){
         item.authors.forEach(function(auth){
-            if(authors.indexOf(auth.toUpperCase()) <= 0) authors.push(auth.toUpperCase());
+            if(authors.indexOf(auth) < 0) authors.push(auth);
+            console.log('authors:',authors);
         })
     });
         
@@ -51,7 +88,7 @@ module.exports.getAllGenres = function(callback){
     var genres=[];
     result.forEach(function(item, index, array){
         item.genres.forEach(function(gen){
-            if(genres.indexOf(gen.toUpperCase()) <= 0) genres.push(gen.toUpperCase());
+            if(genres.indexOf(gen) < 0) genres.push(gen);
         })
     });
         
@@ -63,7 +100,9 @@ module.exports.getAllGenres = function(callback){
  
 module.exports.addNewBook = function(body, callback){
 
-  var book = new Book({
+  var book = new Book(
+      body
+      /*{
 
     name:body.name,
 
@@ -73,11 +112,7 @@ module.exports.addNewBook = function(body, callback){
 
     pages: body.pages
 
-  });
-
- 
-
-  //Saving the model instance to the DB
+  }*/);
 
   book.save(function(err, result){
 

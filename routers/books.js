@@ -24,14 +24,28 @@ router.route('/')
 
     });
 
+router.route('/search/:searchString')
+    .get( function(req,res) {
+        bookController.search(req.params.searchString, function(results){res.json(results);});
+    });
+
 router.route('/genres')
     .get( function(req,res) {
         bookController.getAllGenres(function(results){res.json(results);});
+    });
+router.route('/genres/:genre')
+    .get( function(req,res) {
+        bookController.getBooksByGenre(req.params.genre, function(results){res.json(results);});
     });
 
 router.route('/authors')
     .get( function(req,res) {
         bookController.getAllAuthors(function(results){res.json(results);});
+    });
+
+router.route('/authors/:author')
+    .get( function(req,res) {
+        bookController.getBooksByAuthor(req.params.author, function(results){res.json(results);});
     });
 
 router.route('/:isbn')
