@@ -24,7 +24,8 @@ var BookSchema = new mongoose.Schema({
         type: Number
     },
     ISBN_code:{
-        type: Number
+        type: Number,
+        index: true
     },
     photo:{
         type:String
@@ -47,6 +48,11 @@ var BookSchema = new mongoose.Schema({
     
     
 });
+/*BookSchema.path("authors").set(
+    function( name ) {
+        //capitalize
+        return name.charAt(0).toUpperCase() + name.slice(1);
+});*/
 
 var book =  mongoose.model('book', BookSchema);
 module.exports = book;

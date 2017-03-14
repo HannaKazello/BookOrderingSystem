@@ -11,15 +11,9 @@ var OrderSchema = new mongoose.Schema({
     orderDate:{
         type: Date
     },
-    bookId:{
+    book:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'book'
-    },
-    bookName:{
-        type: String
-    },
-    userName:{
-        type: String
     },
     user:{
         type: mongoose.Schema.Types.ObjectId,
