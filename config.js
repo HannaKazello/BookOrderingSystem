@@ -2,7 +2,7 @@ module.exports = {
     connection: {
         host: "localhost",
         port: 27017,
-        name: "librarydb"
+        name: "library"
     },
     application: {
         port: 8080,

@@ -40,11 +40,11 @@ router.route('/')
             .populate('user')
             .populate('bookId')
             .exec(function(error, orders) {
-                //res.json(JSON.stringify(orders, null, "\t"));
-                //console.log(JSON.stringify(orders, null, "\t"));
+                console.log(orders[0].user_id.email);
+                res.json(orders);
             })
-            console.log(orders);
-            res.json(orders);
+            //console.log(orders);
+            
         })
     })
 ;
