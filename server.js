@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var orders = require('./routers/orders');
 var books = require('./routers/books');
 var users = require('./routers/users');
-
+var sheduler = require('./handlers/sheduler')
 const localConfig = require('./config');
 
 // configure app to use bodyParser()
@@ -16,13 +16,11 @@ var mongoose   = require('mongoose');
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://'+localConfig.connection.host+'/'+localConfig.connection.name); // connect to our database
 
-
-//var port = process.env.PORT || 8080;        // set our port
-
-
 app.use('/orders', orders);
 app.use('/books', books);
 app.use('/users', users);
 
 app.listen(localConfig.application.port);
 console.log('Magic happens on port ' + localConfig.application.port);
+
+//sheduler();

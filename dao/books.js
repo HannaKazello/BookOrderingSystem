@@ -1,37 +1,37 @@
 var ObjectId = require('mongodb').ObjectId;
 var Book = require('../models/book.js');
 
- 
+
 module.exports.findOne = function(ISBN_code, callback){
 
   Book.findOne({ISBN_code: ISBN_code}, function(err, result){
 
-    if ( err ) throw err;
+    if ( err ) callback(err);
 
-    callback(result);
+    callback(null,result);
 
   });
 
 }
- 
+
 module.exports.getBooksByAuthor = function (author, callback) {
-    
+
    Book.find({authors: author}, function (err, result) {
 
-    if ( err ) throw err;
+    if ( err ) callback(err);
 
-    callback(result);
+    callback(null,result);
 
   });
 };
 
 module.exports.getBooksByGenre = function (genre, callback) {
-    
+
    Book.find({genres: genre}, function (err, result) {
 
-    if ( err ) throw err;
+       if ( err ) callback(err);
 
-    callback(result);
+       callback(null,result);
 
   });
 };
@@ -40,9 +40,9 @@ module.exports.findAll = function(callback){
 
   Book.find({}, function(err, result){
 
-    if ( err ) throw err;
+    if ( err ) callback(err);
 
-    callback(result);
+    callback(null, result);
 
   });
 
@@ -57,8 +57,9 @@ module.exports.search = function(searchString ,callback){
     )
     .sort({ score : { $meta : 'textScore' } })
     .exec(function(err, results) {
-      if(err) throw err;
-        callback(results);
+        if ( err ) callback(err);
+
+        callback(null, results);
     });
 
 }
@@ -66,7 +67,7 @@ module.exports.search = function(searchString ,callback){
 module.exports.getAllAuthors = function(callback){
     Book.find({},{authors:1}, function(err, result){
 
-    if ( err ) throw err;
+    if ( err ) callback(err);
     var authors=[];
     result.forEach(function(item, index, array){
         item.authors.forEach(function(auth){
@@ -74,8 +75,8 @@ module.exports.getAllAuthors = function(callback){
             console.log('authors:',authors);
         })
     });
-        
-    callback(authors);
+
+    callback(null, authors);
 
   });
 
@@ -84,41 +85,31 @@ module.exports.getAllAuthors = function(callback){
 module.exports.getAllGenres = function(callback){
     Book.find({},{genres:1}, function(err, result){
 
-    if ( err ) throw err;
+    if ( err ) callback(err);
     var genres=[];
     result.forEach(function(item, index, array){
         item.genres.forEach(function(gen){
             if(genres.indexOf(gen) < 0) genres.push(gen);
         })
     });
-        
-    callback(genres);
+
+    callback(null,genres);
 
   });
 
 }
- 
+
 module.exports.addNewBook = function(body, callback){
 
   var book = new Book(
       body
-      /*{
-
-    name:body.name,
-
-    ISBN_code: body.ISBN_code,
-
-    authors: body.authors,
-
-    pages: body.pages
-
-  }*/);
+     );
 
   book.save(function(err, result){
 
-    if ( err ) throw err;
+    if ( err ) callback(err)
 
-    callback({
+    callback(null,{
 
       messaage:"Successfully added book",
 
@@ -130,26 +121,21 @@ module.exports.addNewBook = function(body, callback){
 
 }
 
- 
+
 module.exports.editBook = function(body, ISBN_code, callback){
 
   Book.findOne({ISBN_code: ISBN_code},body, function(err, result){
-    if ( err ) throw err;
- 
+    if ( err ) callback(err);
+
     if(!result){
-      callback({
+      callback(null,{
         message:"Book with ISBN: " + ISBN_code+" not found.",
       });
     }
- /*
-    result.name   = body.name;
-    result.ISBN_code   = body.ISBN_code;
-    result.authors = body.authors;
-    result.pages  = body.pages;
- */
+
     result.update(body,function(err, result){
-      if ( err ) throw err;
-      callback({
+      if ( err ) callback(err);
+      callback(null,{
         message:"Successfully updated the book",
         book: result
       });
@@ -159,10 +145,11 @@ module.exports.editBook = function(body, ISBN_code, callback){
 
 module.exports.deleteBook = function(ISBN_code, callback){
   Book.findOneAndRemove({ISBN_code: ISBN_code}, function(err, result){
-      callback({
+       if ( err ) callback(err);
+
+      callback(null,{
         message: "Successfully deleted the book",
         book: result
       });
   });
 }
-

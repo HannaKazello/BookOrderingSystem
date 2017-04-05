@@ -7,5 +7,6 @@ module.exports = {
     application: {
         port: 8080,
         DEBUG: true
-    }
+    },
+    secret: 'onlycats',
 }

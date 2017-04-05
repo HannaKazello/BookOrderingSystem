@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var crypto      = require('crypto');
 
 var UserSchema = new mongoose.Schema({
     username:{
@@ -6,7 +7,7 @@ var UserSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    password:{
+    hashedPassword:{
         type:String,
         required:true
     },
@@ -33,6 +34,10 @@ var UserSchema = new mongoose.Schema({
         street: String,
         city: String
     },
+    salt: {
+        type: String,
+        required: true
+    },
     DOB:{
         type: Date
     },
@@ -41,9 +46,16 @@ var UserSchema = new mongoose.Schema({
     },
     rating:{
         type: Number
-    }
-    
-});
+    },
+    admin: Boolean
 
+});
+UserSchema.methods.encryptPassword = function(password) {
+    return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
+
+};
+UserSchema.methods.checkPassword = function(password) {
+    return this.encryptPassword(password) === this.hashedPassword;
+};
 var user =  mongoose.model('user', UserSchema);
 module.exports = user;

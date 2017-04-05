@@ -10,7 +10,7 @@ router.use(function timeLog(req, res, next) {
 
 router.put('/:order_id/:state', function (req, res) {
     orderController.changeState(req.params.order_id, req.params.state,function(results){res.json(results);});
-    
+
 });
 
 router.get('/state/:state', function (req, res) {
@@ -25,7 +25,7 @@ router.route('/')
         orderController.addNewOrder(req.body, function(results){
         res.json(results);
         });
-        
+
     })
 
     //list<Order>
@@ -54,13 +54,13 @@ router.route('/:order_id')
     .get(function(req, res) {
         orderController.getOrderDetails(req.params.order_id,function(results){res.json(results);});
     })
-    
+
     .delete(function(req, res){
          orderController.deleteOrder(req.params.order_id,function(results){res.json(results);});
-        
+
     })
 ;
-    
+
 
 
 module.exports = router;

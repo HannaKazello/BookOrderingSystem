@@ -24,7 +24,7 @@ var BookSchema = new mongoose.Schema({
         type: Number
     },
     ISBN_code:{
-        type: Number,
+        type: String,
         index: true
     },
     photo:{
@@ -45,8 +45,8 @@ var BookSchema = new mongoose.Schema({
     keywords:[{
         type:String
     }]
-    
-    
+
+
 });
 
 BookSchema.index({name: 'text', 'genres': 'text','authors': 'text', description: 'text', alternative_names: 'text', keywords: 'text' }, {name: 'Book search index', weights: {name: 10,alternative_names:8, keywords:7, description: 6, 'genres': 4,'authors': 4}});
