@@ -1,9 +1,11 @@
+
 var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectId;
 var User = require('../models/user');
 const localConfig = require('../config');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var isAuthenticated = require('../middlewares/auth');
 
 router.post('/authenticate', function(req, res) {
 
@@ -35,49 +37,14 @@ router.post('/authenticate', function(req, res) {
           message: 'Enjoy your token!',
           token: token
         });
-      }   
+      }
 
     }
 
   });
 });
+router.post('/', function(req, res) {
 
-// move for all app
-router.use(function(req, res, next) {
-
-  // check header or url parameters or post parameters for token
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-  // decode token
-  if (token) {
-
-    // verifies secret and checks exp
-    jwt.verify(token, localConfig.secret, function(err, decoded) {      
-      if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });    
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded;    
-        next();
-      }
-    });
-
-  } else {
-
-    // if there is no token
-    // return an error
-    return res.status(403).send({ 
-        success: false, 
-        message: 'No token provided.' 
-    });
-    
-  }
-});
-
-
-router.route('/')
-    .post( function(req, res) {
-    
         var user = new User(req.body);
         user.save(function(err,user){
             if(err){
@@ -86,71 +53,71 @@ router.route('/')
             }
             else res.json({ success: true });
         });
-    
-    })
 
-    .get( function(req, res) {
-        
+    });
+
+router.get('/',isAuthenticated, function(req, res) {
+
         User.find({}, function(err, users){
             if(err){
                 throw err;
                 res.json({ success: false });
             }
-            else res.json({ 
+            else res.json({
                 success: true,
                 users: users
             });
         })
     });
 
-router.route('/:user_id')
+router.route('/:user_id', isAuthenticated)
 
     .get(function(req, res) {
         User.findOne({_id: new ObjectId(req.params.user_id)}, function(err, user){
             if(err){
                 throw err;
-                res.json({ 
-        success: false, 
-        message: 'Error' 
+                res.json({
+        success: false,
+        message: 'Error'
     });
             }
-            res.json({ 
-        success: false, 
+            res.json({
+        success: false,
         message: 'No token provided.' ,
         user: user
     });
         })
     })
-    
+
     .delete(function(req, res){
          User.remove({_id: new ObjectId(req.params.user_id)}, function(err, user){
             if(err){
                 throw err;
-                res.json({ 
-        success: false, 
-        message: 'Error' 
+                res.json({
+        success: false,
+        message: 'Error'
     });
             }
-            res.json({ 
-        success: false, 
-        message: 'Deleted' 
+            res.json({
+        success: false,
+        message: 'Deleted'
     });
         });
-        
+
     })
 
     .put(function(req,res){
         User.update({_id: new ObjectId(req.params.user_id)},req.body, function(err, data){
             if(err){
                            throw err;
-                res.json({ 
-        success: false, 
-        message: 'Error' 
+                res.json({
+        success: false,
+        message: 'Error'
     });
             }
-            res.json({ 
-        success: false, 
-        message: 'Updated' 
+            res.json({
+        success: false,
+        message: 'Updated'
     });
         });
     });

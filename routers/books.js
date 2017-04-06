@@ -1,15 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var bookController = require("../handlers/book-controller");
+var isAuthenticated = require('../middlewares/auth');
 
 // middleware that is specific to this router
-router.use(function timeLog(req, res, next) {
-  console.log('we call books router');
-  next();
-});
 
-router.route('/')
-    .post( function(req, res) {
+router.post('/', isAuthenticated, function(req, res) {
 
         bookController.addNewBook(req.body, function(err, results){
             if (err){
@@ -20,9 +16,9 @@ router.route('/')
     });
 
 
-    })
+});
 
-    .get( function(req, res) {
+router.get('/', function(req, res) {
 
        bookController.getAllBooks(function(err,results){
            if (err){
@@ -88,9 +84,7 @@ router.route('/authors/:author')
         });
     });
 
-router.route('/:isbn')
-
-    .get(function(req, res) {
+router.get('/:isbn',function(req, res) {
         bookController.getBookDetails(req.params, function(err,results){
             if (err){
                 res.writeHead(500);
@@ -99,9 +93,9 @@ router.route('/:isbn')
             else res.json(results);
         });
 
-    })
+    });
 
-    .delete(function(req, res){
+    router.delete('/:isbn', isAuthenticated, function(req, res){
          bookController.deleteBook(req.params.isbn, function(err,results){
              if (err){
                  res.writeHead(500);
@@ -110,9 +104,9 @@ router.route('/:isbn')
              else res.json(results);
     });
 
-    })
+});
 
-    .put(function(req,res){
+    router.put('/:isbn',isAuthenticated, function(req,res){
         bookController.editBook(req.body, req.params.isbn, function(err,results){
             if (err){
                 res.writeHead(500);

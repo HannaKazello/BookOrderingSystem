@@ -10,14 +10,14 @@ module.exports.getAllBooks = function(callback){
   console.log("Fetching all books");
   bookDao.findAll(callback);
 }
- 
+
 module.exports.addNewBook = function(body, callback){
   console.log("Adding new book");
   bookDao.addNewBook(body, callback);
 
 }
 module.exports.isThereACopy = function(id, callback){
-  bookDao.isThereACopy(id callback);
+  bookDao.isThereACopy(id, callback);
 }
 module.exports.editBook = function(body, isbn, callback){
   console.log("Editing Book");

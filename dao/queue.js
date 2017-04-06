@@ -26,11 +26,11 @@ module.exports.findAll = function(callback){
 }
 
 function addNewQueue(body, callback){
-module.exports.addNewQueue 
+module.exports.addNewQueue
 
-  var queue = new Queue(
+  var queue = new Queue({
       book: body.book,
-      users: [body.user]
+      users: [body.user]}
      );
 
   queue.save(function(err, result){
@@ -48,7 +48,7 @@ module.exports.addNewQueue
 }
 module.exports.addNewQueue = addNewQueue;
 
-module.exports.editQueue = function(body,type callback){
+module.exports.editQueue = function(body,type, callback){
 
   Queue.findOne({book: body.book}, function(err, result){
     if ( err ) callback(err);
