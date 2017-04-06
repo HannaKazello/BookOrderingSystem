@@ -1,7 +1,6 @@
 var ObjectId = require('mongodb').ObjectId;
 var Order = require('../models/order.js');
 
-
 module.exports.findOne = function(order_id, callback) {
 
     Order.findOne({
@@ -10,7 +9,7 @@ module.exports.findOne = function(order_id, callback) {
         .exec(function(err, result) {
             if (err) throw err;
             callback(result);
-        });;
+        });
 };
 
 
@@ -56,6 +55,8 @@ module.exports.getOrdersByState = function(state, callback) {
 
 module.exports.addNewOrder = function(body, callback) {
 
+    
+    
     var order = new Order({
 
         book: new ObjectId(body.book_id),

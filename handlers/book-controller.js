@@ -16,7 +16,9 @@ module.exports.addNewBook = function(body, callback){
   bookDao.addNewBook(body, callback);
 
 }
-
+module.exports.isThereACopy = function(id, callback){
+  bookDao.isThereACopy(id callback);
+}
 module.exports.editBook = function(body, isbn, callback){
   console.log("Editing Book");
   bookDao.editBook(body, isbn, callback);

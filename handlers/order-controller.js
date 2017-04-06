@@ -1,4 +1,6 @@
 var orderDao = require("../dao/orders");
+var bookDao = require('../dao/orders');
+var queueDao = require('../dao/queue');
 
 module.exports.getOrderDetails = function(order_id, callback){
 
@@ -11,8 +13,11 @@ module.exports.getAllOrders = function(callback){
 }
  
 module.exports.addNewOrder = function(body, callback){
-  
-  orderDao.addNewOrder(body, callback);
+    bookDao.isThereACopy(body.book, function(err, result){
+        if (err) callback(err);
+        else if(result==true) orderDao.addNewOrder(body, callback);
+        queueDao.editQueue(body, callback)
+    })
 
 }
 

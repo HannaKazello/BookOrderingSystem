@@ -2,11 +2,6 @@ var mongoose = require('mongoose');
 var crypto      = require('crypto');
 
 var UserSchema = new mongoose.Schema({
-    username:{
-        type: String,
-        unique: true,
-        required: true
-    },
     hashedPassword:{
         type:String,
         required:true
@@ -26,7 +21,6 @@ var UserSchema = new mongoose.Schema({
     },
     phone:{
         type: String,
-        required: true
     },
     adress:{
         building: String,
@@ -35,8 +29,8 @@ var UserSchema = new mongoose.Schema({
         city: String
     },
     salt: {
-        type: String,
-        required: true
+        type: String//,
+        //required: true
     },
     DOB:{
         type: Date

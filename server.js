@@ -7,6 +7,7 @@ var books = require('./routers/books');
 var users = require('./routers/users');
 var sheduler = require('./handlers/sheduler')
 const localConfig = require('./config');
+var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST

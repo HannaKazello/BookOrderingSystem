@@ -25,6 +25,16 @@ module.exports.getBooksByAuthor = function (author, callback) {
   });
 };
 
+module.exports.ifThereACopy = function (id, callback) {
+
+   Book.find({_id: new ObjectId(id)}, function (err, result) {
+
+    if ( err ) callback(err);
+    if (result.copies>0) callback(null,true);
+
+  });
+};
+
 module.exports.getBooksByGenre = function (genre, callback) {
 
    Book.find({genres: genre}, function (err, result) {
