@@ -1,5 +1,6 @@
 var ObjectId = require('mongodb').ObjectId;
 var Order = require('../models/order.js');
+var bookDao = require('../dao/books');
 
 module.exports.findOne = function(order_id, callback) {
 
@@ -55,12 +56,10 @@ module.exports.getOrdersByState = function(state, callback) {
 
 module.exports.addNewOrder = function(body, callback) {
 
-    
-    
     var order = new Order({
 
-        book: new ObjectId(body.book_id),
-        user: new ObjectId(body.user_id),
+        book: new ObjectId(body.book),
+        user: new ObjectId(body.user),
         orderDate: new Date()
 
     });
@@ -93,6 +92,15 @@ module.exports.changeState = function(id, state, callback) {
     if (state == 'taken') {
         updata.takingDate = setTakingDate();
         updata.returnDate = setRerurnDate();
+    }
+    if (state == 'returned'){
+        Order.findOne({
+            _id: new ObjectId(id)
+        }, function(err, result){
+            if (!err) bookDao.increment(result.book, function(err, result){
+                if(err) throw err;
+            })
+        })
     }
 
     Order.update({

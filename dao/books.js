@@ -1,6 +1,24 @@
 var ObjectId = require('mongodb').ObjectId;
 var Book = require('../models/book.js');
 
+module.exports.increment = function(id, callback){
+
+  Book.update({_id:new ObjectId(id)},{ $inc: { copies: 1}},function(err,book){
+      if (err) callback(err);
+      callback(null, {succsess: true});
+  });
+
+}
+
+module.exports.decrement = function(id, callback){
+
+  Book.update({_id:new ObjectId(id)},{ $inc: { copies: -1}},function(err,book){
+      if (err) callback(err);
+      callback(null, {succsess: true});
+  });
+
+}
+
 
 module.exports.findOne = function(ISBN_code, callback){
 
@@ -27,8 +45,7 @@ module.exports.getBooksByAuthor = function (author, callback) {
 
 module.exports.ifThereACopy = function (id, callback) {
 
-   Book.find({_id: new ObjectId(id)}, function (err, result) {
-
+   Book.findOne({_id: new ObjectId(id)}, function (err, result) {
     if ( err ) callback(err);
     if (result.copies>0) callback(null,true);
 

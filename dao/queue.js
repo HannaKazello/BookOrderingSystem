@@ -8,8 +8,8 @@ module.exports.findOne = function(bookid, callback){
             book: bookid
         }).populate('book')
         .exec(function(err, result) {
-            if (err) throw err;
-            callback(result);
+            if (err) callback(err);
+            callback(null,result);
         });
 
 }
@@ -19,8 +19,8 @@ module.exports.findAll = function(callback){
 
   Queue.find({}).populate('book')
         .exec(function(err, result) {
-            if (err) throw err;
-            callback(result);
+            if (err) callback(err);
+            callback(null,result);
         });;
 
 }
