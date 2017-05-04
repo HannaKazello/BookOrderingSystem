@@ -14,15 +14,16 @@ module.exports.getAllOrders = function(callback){
 
 module.exports.addNewOrder = function(body, callback){
     bookDao.ifThereACopy(body.book, function(err, result){
-        console.log('ifThereACopy '+ result)
-        if (err) callback(err);
+        console.log('ifThereACopy '+ result);
+        if (err) return callback(err);
         else if(result==true) {
             bookDao.decrement(body.book, function(err, result){
+                console.log('ifThereACopy '+ result);
                 if (err) callback(err);
                 else orderDao.addNewOrder(body, callback);
             })
         }
-        else queueDao.edditQueue(body, 'push', callback);
+        else queueDao.editQueue(body, 'push', callback);
     });
 
 }

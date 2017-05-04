@@ -8,8 +8,8 @@ var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var isAuthenticated = require('../middlewares/auth');
 
 router.post('/authenticate', function(req, res) {
-
-  // find the user
+    console.log('email:',req.body.email);
+  console.log('body:',req.body);
   User.findOne({
     email: req.body.email
   }, function(err, user) {
@@ -35,7 +35,8 @@ router.post('/authenticate', function(req, res) {
         res.json({
           success: true,
           message: 'Enjoy your token!',
-          token: token
+          token: token,
+          user: user
         });
       }
 

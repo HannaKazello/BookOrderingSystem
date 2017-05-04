@@ -1,12 +1,13 @@
 var ObjectId = require('mongodb').ObjectId;
 var Order = require('../models/order.js');
 var bookDao = require('../dao/books');
+var queueDao = require('../dao/queue');
 
 module.exports.findOne = function(order_id, callback) {
 
     Order.findOne({
             _id: new ObjectId(order_id)
-        }).populate('user').populate('book')
+        }).populate('book', ['name','authors']).populate('users', ['firstName','lastName'])
         .exec(function(err, result) {
             if (err) throw err;
             callback(result);
@@ -16,7 +17,7 @@ module.exports.findOne = function(order_id, callback) {
 
 module.exports.findAll = function(callback) {
 
-    Order.find({}).populate('user').populate('book')
+    Order.find({}).populate('book', ['name','authors']).populate('users', ['firstName','lastName'])
         .exec(function(err, result) {
             if (err) throw err;
             callback(result);
@@ -27,7 +28,7 @@ module.exports.getOrdersByUser = function(user_id, callback) {
 
     Order.find({
             user: new ObjectId(user_id)
-        }).populate('user').populate('book')
+        }).populate('book', ['name','authors']).populate('users', ['firstName','lastName'])
         .exec(function(err, result) {
             if (err) throw err;
             callback(result);
@@ -37,7 +38,7 @@ module.exports.getOrdersByUser = function(user_id, callback) {
 module.exports.getOrdersByBook = function(book_id, callback) {
     Order.find({
             user: new ObjectId(user_id)
-        }).populate('user').populate('book')
+        }).populate('book', ['name','authors']).populate('users', ['firstName','lastName'])
         .exec(function(err, result) {
             if (err) throw err;
             callback(result);
@@ -47,15 +48,15 @@ module.exports.getOrdersByBook = function(book_id, callback) {
 module.exports.getOrdersByState = function(state, callback) {
     Order.find({
             state: state
-        }).populate('user').populate('book')
+        }).populate('book', ['name','authors']).populate('users', ['firstName','lastName'])
         .exec(function(err, result) {
             if (err) throw err;
             callback(result);
         });;
 };
 
-module.exports.addNewOrder = function(body, callback) {
-
+ function addNewOrder(body, callback) {
+     console.log('body:',body);
     var order = new Order({
 
         book: new ObjectId(body.book),
@@ -66,13 +67,13 @@ module.exports.addNewOrder = function(body, callback) {
 
     order.save(function(err, result) {
         if (err) throw err;
-        callback({
+        return callback({
             messaage: "Successfully added order",
             order: result
         });
     });
 };
-
+module.exports.addNewOrder = addNewOrder;
 module.exports.deleteOrder = function(id, callback) {
     Order.findOneAndRemove({
         _id: new ObjectId(id)
@@ -93,13 +94,24 @@ module.exports.changeState = function(id, state, callback) {
         updata.takingDate = setTakingDate();
         updata.returnDate = setRerurnDate();
     }
-    if (state == 'returned'){
+    if (state == 'returned') {
         Order.findOne({
             _id: new ObjectId(id)
-        }, function(err, result){
-            if (!err) bookDao.increment(result.book, function(err, result){
-                if(err) throw err;
-            })
+        }, function(err, result) {
+            if (!err) {
+                bookDao.increment(result.book, function(err, result) {
+                    if (err) throw err;
+                })
+                queueDao.popUserFromQueue(result.book, function(err, user){
+                    var body = {
+                        book: result.book,
+                        user: user
+                    }
+                    addNewOrder(body,function(result){
+                        console.log('addNewOrder: ', result);
+                    });
+                });
+            }
         })
     }
 

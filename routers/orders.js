@@ -17,8 +17,8 @@ router.get('/state/:state', isAuthenticated, function(req, res) {
     });
 });
 
-router.post('/', isAuthenticated, function(req, res) {
-    orderController.addNewOrder(req.body, function(results) {
+router.post('/',  function(req, res) {
+    orderController.addNewOrder(req.body, function(err, results) {
         res.json(results);
     });
 

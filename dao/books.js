@@ -44,10 +44,12 @@ module.exports.getBooksByAuthor = function (author, callback) {
 };
 
 module.exports.ifThereACopy = function (id, callback) {
-
+    console.log('im in ifThereACopy '+ id);
    Book.findOne({_id: new ObjectId(id)}, function (err, result) {
+       console.log('find book :',err, result);
     if ( err ) callback(err);
     if (result.copies>0) callback(null,true);
+    if (result.copies<=0) callback(null, false);
 
   });
 };
