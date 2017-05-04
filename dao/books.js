@@ -34,19 +34,15 @@ module.exports.findOne = function(ISBN_code, callback){
 
 module.exports.getBooksByAuthor = function (author, callback) {
 
-   Book.find({authors: author}, function (err, result) {
-
+   Book.find({authors: author},{name:1, authors:1, genres:1, keywords:1, ISBN_code:1}, function (err, result) {
     if ( err ) callback(err);
-
     callback(null,result);
 
   });
 };
 
 module.exports.ifThereACopy = function (id, callback) {
-    console.log('im in ifThereACopy '+ id);
    Book.findOne({_id: new ObjectId(id)}, function (err, result) {
-       console.log('find book :',err, result);
     if ( err ) callback(err);
     if (result.copies>0) callback(null,true);
     if (result.copies<=0) callback(null, false);
@@ -56,10 +52,9 @@ module.exports.ifThereACopy = function (id, callback) {
 
 module.exports.getBooksByGenre = function (genre, callback) {
 
-   Book.find({genres: genre}, function (err, result) {
+   Book.find({genres: genre},{name:1, authors:1, genres:1, keywords:1, ISBN_code:1}, function (err, result) {
 
        if ( err ) callback(err);
-
        callback(null,result);
 
   });
@@ -67,10 +62,9 @@ module.exports.getBooksByGenre = function (genre, callback) {
 
 module.exports.findAll = function(callback){
 
-  Book.find({}, function(err, result){
-
+  Book.find({},{name:1, authors:1, genres:1, keywords:1, ISBN_code:1}, function(err, result){
+      console.log(result);
     if ( err ) callback(err);
-
     callback(null, result);
 
   });
@@ -83,11 +77,12 @@ module.exports.search = function(searchString ,callback){
     .find(
         { $text : { $search : searchString } }
       , { score : { $meta: "textScore" } }
+      ,{name:1, authors:1, genres:1, keywords:1, ISBN_code:1}
     )
     .sort({ score : { $meta : 'textScore' } })
     .exec(function(err, results) {
         if ( err ) callback(err);
-
+        console.log('search result: ',results);
         callback(null, results);
     });
 
@@ -149,7 +144,6 @@ module.exports.addNewBook = function(body, callback){
   });
 
 }
-
 
 module.exports.editBook = function(body, ISBN_code, callback){
 
