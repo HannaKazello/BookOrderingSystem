@@ -49,7 +49,7 @@ var BookSchema = new mongoose.Schema({
 
 });
 
-BookSchema.index({name: 'text', 'genres': 'text','authors': 'text', description: 'text', alternative_names: 'text', keywords: 'text' }, {name: 'Book search index', weights: {name: 10,alternative_names:8, keywords:7, description: 6, 'genres': 4,'authors': 4}});
+BookSchema.index({name: 'text', genres: 'text', authors: 'text', description: 'text', alternative_names: 'text', keywords: 'text' }, {name: 'Book search index', weights: {name: 10, genres: 8, authors: 8, alternative_names:9, keywords:7, description: 6}});
 
 var book =  mongoose.model('book', BookSchema);
 module.exports = book;

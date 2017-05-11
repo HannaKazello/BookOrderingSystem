@@ -76,6 +76,7 @@ module.exports.popUserFromQueue = function(book, callback) {
     Queue.findOne({book: book}, function(err, result) {
         console.log('find queu:', err, result);
         if (err) return callback(err);
+        if(result===null) return callback(null, null);
         var users = result.users;
         var user;
         users.reverse();

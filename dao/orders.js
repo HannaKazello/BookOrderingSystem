@@ -103,6 +103,7 @@ module.exports.changeState = function(id, state, callback) {
                     if (err) throw err;
                 })
                 queueDao.popUserFromQueue(result.book, function(err, user){
+                    if(user===null) return;
                     var body = {
                         book: result.book,
                         user: user
@@ -121,8 +122,7 @@ module.exports.changeState = function(id, state, callback) {
         if (err) throw err;
 
         callback({
-            messaage: "state changed",
-            order: data
+            messaage: "state changed"
         });
     });
 };

@@ -20,6 +20,7 @@ mongoose.connect('mongodb://'+localConfig.connection.host+'/'+localConfig.connec
 app.use(function(req, res, next){
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT ,DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'x-access-token');
     next();
 });
