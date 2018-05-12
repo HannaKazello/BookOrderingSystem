@@ -1,6 +1,5 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import jwt from 'jsonwebtoken'; // used to create, sign, and verify tokens
 
 import orders from './routers/orders';
 import books from './routers/books';
