@@ -1,143 +1,178 @@
-var express = require('express');
-var router = express.Router();
-var ObjectId = require('mongodb').ObjectId;
-var User = require('../models/user');
-const localConfig = require('../config');
-var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-var isAuthenticated = require('../middlewares/auth');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import neo4j from 'neo4j';
+import localConfig from '../config';
+import isAuthenticated from '../middlewares/auth';
 
-router.post('/authenticate', function(req, res) {
-    console.log('email:', req.body.email);
-    console.log('body:', req.body);
-    User.findOne({
-        email: req.body.email
-    }, function(err, user) {
+const router = express.Router();
 
-        if (err) throw err;
+const db = new neo4j.GraphDatabase('http://neo4j:1111@localhost:7474');
 
-        if (!user) {
-            res.json({
-                success: false,
-                message: 'Authentication failed. User not found.'
-            });
-        } else if (user) {
+const encryptPassword = password =>
+  crypto.createHmac('sha1', localConfig.secret).update(password).digest('hex');
 
-            // check if password matches
-            if (user.password != req.body.password) {
-                res.json({
-                    success: false,
-                    message: 'Authentication failed. Wrong password.'
-                });
-            } else {
+router.post('/authenticate', (req, res) => {
+  const { email, password } = req.body;
 
-                // if user is found and password is right
-                // create a token
-                var token = jwt.sign(user, localConfig.secret, {
-                    //expiresInMinutes: 1440 // expires in 24 hours
-                });
-
-                // return the information including token as JSON
-                res.json({
-                    success: true,
-                    message: 'Enjoy your token!',
-                    token: token,
-                    user: user
-                });
-            }
-
-        }
-
+  if (!email || !password) {
+    return res.json({
+      success: false,
+      message: 'Authentication failed. User or password are not provided',
     });
-});
-router.post('/', function(req, res) {
+  }
 
-    var user = new User(req.body);
-    user.save(function(err, user) {
-        if (err) {
-            throw err;
-            res.json({
-                success: false
-            });
-        } else res.json({
-            success: true
-        });
+  const query = 'MATCH (p:Person { email: {email} }) RETURN p';
+  const params = { email };
+
+  return db.cypher({ query, params }, (err, results) => {
+    if (err) {
+      res.json({
+        success: false,
+        message: err.message,
+      });
+      return;
+    }
+
+    const result = results[0];
+    if (!result) {
+      res.json({
+        success: false,
+        message: 'Authentication failed. User not found.',
+      });
+      return;
+    }
+
+    const user = result.p.properties;
+
+    if (encryptPassword(password) !== user.password) {
+      res.json({
+        success: false,
+        message: 'Authentication failed. Wrong password.',
+      });
+      return;
+    }
+
+    const token = jwt.sign(user, localConfig.secret);
+
+    // return the information including token as JSON
+    res.json({
+      success: true,
+      message: 'Enjoy your token!',
+      token,
+      user: {
+        name: user.name,
+        email: user.email,
+      },
     });
-
-});
-
-router.get('/', isAuthenticated, function(req, res) {
-
-    User.find({}, function(err, users) {
-        if (err) {
-            throw err;
-            res.json({
-                success: false
-            });
-        } else res.json({
-            success: true,
-            users: users
-        });
-    })
+  });
 });
 
-router.route('/:user_id', isAuthenticated)
-
-    .get(function(req, res) {
-        User.findOne({
-            _id: new ObjectId(req.params.user_id)
-        }, function(err, user) {
-            if (err) {
-                throw err;
-                res.json({
-                    success: false,
-                    message: 'Error'
-                });
-            }
-            res.json({
-                success: false,
-                message: 'No token provided.',
-                user: user
-            });
-        })
-    })
-
-    .delete(function(req, res) {
-        User.remove({
-            _id: new ObjectId(req.params.user_id)
-        }, function(err, user) {
-            if (err) {
-                throw err;
-                res.json({
-                    success: false,
-                    message: 'Error'
-                });
-            }
-            res.json({
-                success: false,
-                message: 'Deleted'
-            });
-        });
-
-    })
-
-    .put(function(req, res) {
-        User.update({
-            _id: new ObjectId(req.params.user_id)
-        }, req.body, function(err, data) {
-            if (err) {
-                throw err;
-                res.json({
-                    success: false,
-                    message: 'Error'
-                });
-            }
-            res.json({
-                success: false,
-                message: 'Updated'
-            });
-        });
+router.post('/', (req, res) => {
+  const { email, password, name } = req.body;
+  if (!email || !password) {
+    return res.json({
+      success: false,
     });
+  }
 
+  const hashedPassword = encryptPassword(password);
+  const query = 'CREATE (ee:Person { name: {name}, email: {email}, password: {password} })';
+  const params = {
+    email, password: hashedPassword, name,
+  };
 
+  return db.cypher({ query, params }, (err, results) => {
+    if (err) {
+      res.json({
+        success: false,
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      result: results,
+    });
+  });
+});
+
+router.get('/', isAuthenticated, (req, res) => {
+  const query = 'MATCH (p:Person) RETURN p';
+  const mapToUsers = array => array.map(el => el.p.properties);
+
+  return db.cypher({ query }, (err, results) => {
+    if (err) {
+      res.json({
+        success: false,
+      });
+      return;
+    }
+
+    res.json({
+      success: true,
+      result: mapToUsers(results),
+    });
+  });
+});
+
+router.route('/:user_email', isAuthenticated)
+
+  .get((req, res) => {
+    const query = 'MATCH (p:Person { email: {email} }) RETURN p';
+    const params = { email: req.params.user_email };
+
+    return db.cypher({ query, params }, (err, results) => {
+      if (err) {
+        res.json({
+          success: false,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        result: results[0] ? results[0].p.properties : {},
+      });
+    });
+  })
+
+  .delete((req, res) => {
+    const query = 'MATCH (p:Person { email: {email} }) DELETE p';
+    const params = { email: req.params.user_email };
+
+    return db.cypher({ query, params }, (err, results) => {
+      if (err) {
+        res.json({
+          success: false,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        result: results[0] ? results[0].p.properties : {},
+      });
+    });
+  })
+
+  .put((req, res) => {
+    const query = 'MATCH (p:Person { email: {email} }) SET p.name ={newName}';
+    const params = { email: req.params.user_email, newName: req.body.newName };
+
+    return db.cypher({ query, params }, (err, results) => {
+      if (err) {
+        res.json({
+          success: false,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        result: results[0] ? results[0].p.properties : {},
+      });
+    });
+  });
 
 module.exports = router;
