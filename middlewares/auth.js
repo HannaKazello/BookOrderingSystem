@@ -1,37 +1,34 @@
-var User = require('../models/user');
-const localConfig = require('../config');
-var jwt = require('jsonwebtoken'); // used
-function isAuthenticated(req, res, next) {
+import jwt from 'jsonwebtoken';
+import localConfig from '../config';
 
-    // check header or url parameters or post parameters for token
-    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+const isAuthenticated = (req, res, next) => {
 
-    // decode token
-    if (token) {
+  // check header or url parameters or post parameters for token
+  const token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-        // verifies secret and checks exp
-        jwt.verify(token, localConfig.secret, function(err, decoded) {
-            if (err) {
-                return res.json({
-                    success: false,
-                    message: 'Failed to authenticate token.'
-                });
-            } else {
-                // if everything is good, save to request for use in other routes
-                req.decoded = decoded;
-                next();
-            }
-        });
-
-    } else {
-
-        // if there is no token
-        // return an error
-        return res.status(403).send({
-            success: false,
-            message: 'No token provided.'
-        });
-
+  if (!token) {
+    // if there is no token
+    // return an error
+    res.status(403).send({
+      success: false,
+      message: 'No token provided.',
+    });
+    return;
+  }
+  // verifies secret and checks exp
+  jwt.verify(token, localConfig.secret, (err, decoded) => {
+    if (err) {
+      res.json({
+        success: false,
+        message: 'Failed to authenticate token.',
+      });
+      return;
     }
-}
-module.exports = isAuthenticated;
+
+    // if everything is good, save to request for use in other routes
+    req.decoded = decoded;
+    next();
+  });
+};
+
+export default isAuthenticated;
