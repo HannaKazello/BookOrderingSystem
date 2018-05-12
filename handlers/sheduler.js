@@ -1,4 +1,10 @@
-var crontab = require('node-crontab');
-var jobId = crontab.scheduleJob("*/2 * * * *", function(){ //This will call this function every 2 minutes 
-    console.log("It's been 2 minutes!");
-});
+import crontab from 'node-crontab';
+
+// This will call this function every 2 minutes
+const sheduler = () => {
+  const jobId = crontab.scheduleJob('*/2 * * * *', () => {
+    console.info("It's been 2 minutes!");
+  });
+};
+
+export default sheduler;
