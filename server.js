@@ -1,10 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import orders from './routers/orders';
-import books from './routers/books';
+import relationships from './routers/relationships';
+import records from './routers/records';
 import users from './routers/users';
-import queue from './routers/queue';
 import sheduler from './handlers/sheduler';
 import localConfig from './config';
 
@@ -27,10 +26,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/orders', orders);
-app.use('/books', books);
+app.use('/relationships', relationships);
+app.use('/records', records);
 app.use('/users', users);
-app.use('/queue', queue);
 
 app.listen(localConfig.application.port);
 
