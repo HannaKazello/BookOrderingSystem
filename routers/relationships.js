@@ -67,3 +67,5 @@ router.delete('/', isAuthenticated, (req, res) => {
     });
   });
 });
+
+module.exports = router;

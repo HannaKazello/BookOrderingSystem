@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 
 import relationships from './routers/relationships';
+import recomendations from './routers/recomendations';
 import records from './routers/records';
 import users from './routers/users';
 import sheduler from './handlers/sheduler';
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/relationships', relationships);
+app.use('/recomendations', recomendations);
 app.use('/records', records);
 app.use('/users', users);
 

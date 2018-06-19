@@ -14,6 +14,7 @@ const encryptPassword = password =>
 
 router.post('/authenticate', (req, res) => {
   const { email, password } = req.body;
+  console.log('email: ', email);
 
   if (!email || !password) {
     return res.json({
@@ -70,6 +71,7 @@ router.post('/authenticate', (req, res) => {
 
 router.post('/', (req, res) => {
   const { email, password, name } = req.body;
+  console.log(email, password);
   if (!email || !password) {
     return res.json({
       success: false,
@@ -82,19 +84,25 @@ router.post('/', (req, res) => {
     email, password: hashedPassword, name,
   };
 
-  return db.cypher({ query, params }, (err, results) => {
-    if (err) {
-      res.json({
-        success: false,
-      });
-      return;
-    }
+  try {
+    return db.cypher({ query, params }, (err, results) => {
+      if (err) {
+        res.json({
+          success: false,
+        });
+        return;
+      }
 
-    res.json({
-      success: true,
-      result: results,
+      res.json({
+        success: true,
+        result: results,
+      });
     });
-  });
+  } catch (e) {
+    res.json({
+      success: false,
+    });
+  }
 });
 
 router.get('/', isAuthenticated, (req, res) => {
