@@ -70,8 +70,7 @@ router.post('/authenticate', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { email, password, name } = req.body;
-  console.log(email, password);
+  const { email, password } = req.body;
   if (!email || !password) {
     return res.json({
       success: false,
@@ -79,9 +78,9 @@ router.post('/', (req, res) => {
   }
 
   const hashedPassword = encryptPassword(password);
-  const query = 'CREATE (ee:Person { name: {name}, email: {email}, password: {password} })';
+  const query = 'CREATE (ee:Person { email: {email}, password: {password} })';
   const params = {
-    email, password: hashedPassword, name,
+    email, password: hashedPassword,
   };
 
   try {
